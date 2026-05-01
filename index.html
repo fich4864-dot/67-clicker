@@ -241,6 +241,8 @@
   }
 
   // --- State ---
+  let specialSound = new Audio('videoplayback.m4a');
+  specialSound.volume = 0.7;
   let count = 0;
   let comboCount = 0;
   let bestStreak = 0;
@@ -280,7 +282,14 @@
   function playClick(n) {
     if (muted) return;
     const ctx = getCtx();
-    if (n % 67 === 0 && n > 0) { playSixSeven(ctx); return; }
+    if (n % 67 === 0 && n > 0) { 
+  if (!muted) {
+    specialSound.currentTime = 0;
+    specialSound.volume = masterVol; // чтобы работал твой ползунок
+    specialSound.play();
+  }
+  return; 
+}
     const osc = ctx.createOscillator();
     const g = ctx.createGain();
     osc.connect(g); g.connect(ctx.destination);
