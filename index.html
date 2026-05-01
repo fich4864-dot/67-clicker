@@ -241,18 +241,42 @@
   }
 
   // --- State ---
-  let specialSound = new Audio('videoplayback.m4a');
-  specialSound.volume = 0.7;
-  let count = 0;
-  let comboCount = 0;
-  let bestStreak = 0;
-  let currentStreak = 0;
-  let lastClickTime = 0;
-  let rapidCount = 0;
-  let muted = false;
-  let masterVol = 0.5;
-  let audioCtx = null;
-  let touchHandled = false;
+  // Указываем путь к твоему новому файлу
+let specialSound = new Audio('67.mp3'); 
+let count = 0;
+// ... (остальные переменные без изменений)
+
+function playClick(n) {
+  if (muted) return;
+  const ctx = getCtx();
+
+  // ПРОВЕРКА НА 67
+  if (n % 67 === 0 && n > 0) {
+    specialSound.currentTime = 0; // Сбрасываем в начало, чтобы можно было спамить
+    specialSound.volume = masterVol;
+    specialSound.play();
+    
+    // Добавим визуальный эффект вспышки на фон
+    document.body.style.transition = '0.1s';
+    document.body.style.background = 'var(--accent)';
+    setTimeout(() => {
+      document.body.style.background = 'var(--bg)';
+    }, 100);
+    return; 
+  }
+
+  // Обычный звук клика (синтезированный)
+  const osc = ctx.createOscillator();
+  const g = ctx.createGain();
+  osc.connect(g); g.connect(ctx.destination);
+  const base = 200 + (n % 16) * 20;
+  osc.frequency.setValueAtTime(base, ctx.currentTime);
+  osc.type = 'triangle';
+  g.gain.setValueAtTime(masterVol * 0.3, ctx.currentTime);
+  g.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.13);
+  osc.start();
+  osc.stop(ctx.currentTime + 0.14);
+}
 
   // CPS tracking
   let clickTimes = [];
